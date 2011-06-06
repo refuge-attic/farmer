@@ -1,0 +1,15 @@
+%% -*- tab-width: 4;erlang-indent-level: 4;indent-tabs-mode: nil -*-
+%% ex: ft=erlang ts=4 sw=4 et
+%%%
+%%% This file is part of farmer released under the MIT license. 
+%%% See the NOTICE for more information.
+
+
+{application, farmer,
+ [
+  {description, "Application to manage nodes in refuge."},
+  {vsn, "0.1"},
+  {registered, [
+          farmer_sup]},
+  {applications, [dnssd]}
+]}.

@@ -43,8 +43,11 @@ handle_nodes_req(#httpd{method='GET'}=Req) ->
             {ok, Resp} = couch_httpd:start_json_response(Req, 200),
             handle_nodes_updates(Req, Resp, Feed);
         _ ->
+            Headers = [
+                {"Content-Type", "text/plain;charset=utf-8"},
+                {"Cache-Control", "must-revalidate"}],
             {ok, Resp} = couch_httpd:start_chunked_response(Req, 200,
-                [{"Cache-Control", "must-revalidate"}]),
+                Headers),
             handle_nodes_updates(Req, Resp, Feed)
     end;
 handle_nodes_req(Req) ->

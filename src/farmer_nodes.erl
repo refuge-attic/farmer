@@ -50,6 +50,8 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_info({add_node, #node{host=Host, port=Port}=Node}, #state{nodes=Nodes}=State) ->
+    ?LOG_INFO("add: ~p~n", [Node]),
+
     Nodes1 = dict:store({Host, Port}, Node, Nodes),
     {noreply, State#state{nodes=Nodes1, last_update=erlang:now()}};
 handle_info({remove_node, #node{host=Host, port=Port}}, #state{nodes=Nodes}=State) ->

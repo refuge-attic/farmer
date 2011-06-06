@@ -12,12 +12,6 @@ start_link() ->
 
 init([]) ->
     Children = [
-        {farmer_dnssd, 
-            {farmer_dnssd, start_link, []},
-            permanent,
-            brutal_kill,
-            worker,
-            [farmer_dnssd]},
         {farmer_node_event_sup,
             {gen_event, start_link, [{local, farmer_node_event}]},
             permanent,
@@ -29,7 +23,13 @@ init([]) ->
             permanent,
             1000,
             worker,
-            [farmer_nodes]}
+            [farmer_nodes]},
+        {farmer_dnssd, 
+            {farmer_dnssd, start_link, []},
+            permanent,
+            brutal_kill,
+            worker,
+            [farmer_dnssd]}
         ],
     {ok, {{one_for_one, 10, 3600}, Children}}.
 

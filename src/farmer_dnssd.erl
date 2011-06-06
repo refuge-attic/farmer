@@ -26,6 +26,7 @@ start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 init([]) ->
+    process_flag(trap_exit, true),
     {ok, Ref} = dnssd:browse("_http._tcp,_refuge"),
     LocalOnly = is_local_only(),
     State = #state{local_only = LocalOnly, browse_ref = Ref},
@@ -52,13 +53,11 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_info({dnssd, Ref, {browse, add, Result}}, #state{browse_ref = Ref}=State) ->
-    ?LOG_INFO(?MODULE_STRING " add ~p ~p~n", [Ref, Result]),
     spawn_link(fun() ->
                 maybe_notify(add_node, Result)
         end),
     {noreply, State};
 handle_info({dnssd, Ref, {browse, remove, Result}}, #state{browse_ref = Ref}=State) ->
-    ?LOG_INFO(?MODULE_STRING " remove ~p~n", [Result]),
     spawn_link(fun() ->
                 maybe_notify(remove_node, Result)
         end),
@@ -78,6 +77,7 @@ maybe_notify(Type, Result) ->
     case make_node_info(Result) of
         {error, _} -> ok;
         Node ->
+            ?LOG_INFO(?MODULE_STRING " ~p ~p~n", [Type, Node]),
             farmer_nodes_events:notify({Type, Node})
     end.
 
